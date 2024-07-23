@@ -27,6 +27,7 @@ func main() {
 	router := chi.NewRouter()
 
 	// allows request from broswer 
+	// just sends extra headers allowing user to have more control
 	router.Use(cors.Handler(cors.Options{
 	  	AllowedOrigins:   []string{"http://*"}, 
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -35,6 +36,14 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300, 
 	}))	
+
+	// /v1/ready route  
+	// gives us two handlers 
+	// scopes for get
+	v1Router := chi.NewRouter()
+	v1Router.Get("/healthz",handlerReadiness)
+
+	router.Mount("/v1",v1Router)
 
 	srv := &http.Server{
 		Handler: router,
