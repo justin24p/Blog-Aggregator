@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +10,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/justin24p/rssAggregator/internal/database"
+	// _ "github.com/lib/pg"
 )
+
+// hold database connection
+type apiConfig struct {
+	DB *database.Queries
+}
 
 func main() {
 	fmt.Println("hello world")
@@ -23,6 +31,22 @@ func main() {
 	if portString == "" {
 		log.Fatal("Port isn't found")
 	}
+
+	// import database connection
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("DB_URL is not found")
+	}
+	// conneciton to db
+	conn, err := sql.Open("postgres",dbURL)
+	if err != nil{
+		log.Fatal("Cant connect to database")
+	}
+
+	apiCfg := apiConfig{
+		DB: database.New(conn), 
+	}
+
 
 	router := chi.NewRouter()
 
@@ -42,6 +66,9 @@ func main() {
 	// scopes for get
 	v1Router := chi.NewRouter()
 	v1Router.Get("/healthz",handlerReadiness)
+	v1Router.Get("/err", handlerError)
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Get("/users",apiCfg.handlerGetUser)
 
 	router.Mount("/v1",v1Router)
 
