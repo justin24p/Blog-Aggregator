@@ -34,13 +34,21 @@ type Feed struct {
 	UserID    uuid.UUID  `json:"user_id"`
 }
 func databaseFeedToFeed(dbFeed database.Feed) Feed {
-	return Feed {
-		ID: dbFeed.ID,
-		CreatedAt: dbFeed.CreatedAt,
-		UpdatedAt: dbFeed.UpdatedAt,
-		Name: dbFeed.Name, 
-		Url: dbFeed.Url,
-		UserID: dbFeed.ID,
+	return Feed{
+	ID: dbFeed.ID,
+	CreatedAt: dbFeed.CreatedAt,
+	UpdatedAt: dbFeed.UpdatedAt,
+	Name: dbFeed.Name,
+	Url: dbFeed.Url,
+	UserID: dbFeed.UserID,
 	}
+}
+func databaseFeedToFeeds(dbFeeds []database.Feed) []Feed {
+		feeds := []Feed{}
+		for _, dbFeed := range dbFeeds {
+			feeds = append(feeds, databaseFeedToFeed(dbFeed))
+		}
+		return feeds
+		
 }
 // create and return a user struct
