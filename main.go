@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,13 +19,6 @@ type apiConfig struct {
 }
 
 func main() {
-	feed, errr := urlToFeed("https://wagslane.dev/index.xml")
-	if errr != nil {
-		log.Fatal(errr)
-	}
-	fmt.Println(feed)
-	fmt.Println("hello world")
-
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
